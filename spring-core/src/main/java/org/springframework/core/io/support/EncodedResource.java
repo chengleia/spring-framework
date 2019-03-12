@@ -139,6 +139,8 @@ public class EncodedResource implements InputStreamSource {
 	 * @see #getInputStream()
 	 */
 	public Reader getReader() throws IOException {
+		//字符集即字符的集合，规定了在这些集合里面有哪些字符，每一个字符都有一个编号（一个整数），但这只是编号不是编码。
+		//编码就规定了一个编号如何与二进制交互。https://www.cnblogs.com/skynet/archive/2011/05/03/2035105.html
 		if (this.charset != null) {
 			return new InputStreamReader(this.resource.getInputStream(), this.charset);
 		}

@@ -75,6 +75,7 @@ public class UrlResource extends AbstractFileResolvingResource {
 		this.url = url;
 		this.cleanedUrl = getCleanedUrl(this.url, url.toString());
 		this.uri = null;
+		System.out.println();
 	}
 
 	/**
@@ -89,6 +90,7 @@ public class UrlResource extends AbstractFileResolvingResource {
 		this.uri = null;
 		this.url = new URL(path);
 		this.cleanedUrl = getCleanedUrl(this.url, path);
+		System.out.println();
 	}
 
 	/**

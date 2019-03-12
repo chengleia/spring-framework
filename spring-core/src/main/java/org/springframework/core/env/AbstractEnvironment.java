@@ -582,4 +582,21 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 				", defaultProfiles=" + this.defaultProfiles + ", propertySources=" + this.propertySources + "}";
 	}
 
+	public static void main(String[] args) {
+		System.out.println(v());
+	}
+
+	public static int v(){
+		int i =0;
+		try {
+			i+=10;
+			return i;
+
+		}catch (Exception e){
+			i-=10;
+			return i;
+
+		}
+
+	}
 }

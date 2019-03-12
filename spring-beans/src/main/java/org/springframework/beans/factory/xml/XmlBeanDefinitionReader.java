@@ -37,8 +37,10 @@ import org.xml.sax.*;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Currency;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Bean definition reader for XML bean definitions.
@@ -310,6 +312,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 */
 	@Override
 	public int loadBeanDefinitions(Resource resource) throws BeanDefinitionStoreException {
+
 		return loadBeanDefinitions(new EncodedResource(resource));
 	}
 
@@ -332,7 +335,10 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 			currentResources = new HashSet<>(4);
 			this.resourcesCurrentlyBeingLoaded.set(currentResources);
 		}
-		if (!currentResources.add(encodedResource)) { // 将当前资源加入记录中。如果已存在，抛出异常
+
+		// 将当前资源加入记录中。如果已存在，抛出异常
+		if (!currentResources.add(encodedResource)) {
+			//Detected cyclic循环检测
 			throw new BeanDefinitionStoreException("Detected cyclic loading of " + encodedResource + " - check your import definitions!");
 		}
 		try {
@@ -340,7 +346,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 			InputStream inputStream = encodedResource.getResource().getInputStream();
 			try {
 				InputSource inputSource = new InputSource(inputStream);
-				if (encodedResource.getEncoding() != null) { // 设置编码
+				// 设置编码
+				if (encodedResource.getEncoding() != null) {
 					inputSource.setEncoding(encodedResource.getEncoding());
 				}
                 // 核心逻辑部分，执行加载 BeanDefinition
@@ -351,8 +358,9 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 		} catch (IOException ex) {
 			throw new BeanDefinitionStoreException("IOException parsing XML document from " + encodedResource.getResource(), ex);
 		} finally {
-            // 从缓存中剔除该资源
+            // 从资源列表中剔除该资源
 			currentResources.remove(encodedResource);
+			// 如果资源列表为空 该threadlocal从线程对应map里中移除
 			if (currentResources.isEmpty()) {
 				this.resourcesCurrentlyBeingLoaded.remove();
 			}
@@ -449,6 +457,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @see #detectValidationMode
 	 */
 	protected int getValidationModeForResource(Resource resource) {
+		//xml常见的验证模式有两种 dtd和xsd
         // 获取指定的验证模式
 		int validationModeToUse = getValidationMode();
         // 首先，如果手动指定，则直接返回
@@ -475,7 +484,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * of the {@link #VALIDATION_AUTO} mode.
 	 */
 	protected int detectValidationMode(Resource resource) {
-	    // 不可读，抛出 BeanDefinitionStoreException 异常
+	    // 资源已被打开了，抛出 BeanDefinitionStoreException 异常
 		if (resource.isOpen()) {
 			throw new BeanDefinitionStoreException(
 					"Passed-in Resource [" + resource + "] contains an open stream: " +

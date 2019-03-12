@@ -82,22 +82,26 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 	 */
 	@SuppressWarnings("JavadocReference")
     protected AbstractBeanDefinitionReader(BeanDefinitionRegistry registry) {
+		//传入的factory一定是BeanDefinitionRegistry的实现类
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
+		//把这个注册处(工厂实现)设置给XmlBeanDefinitionReader
 		this.registry = registry;
 
-		// Determine ResourceLoader to use.
+		// 我们用的是BeanFactory比较简单并没有实现这个接口
 		if (this.registry instanceof ResourceLoader) {
 			this.resourceLoader = (ResourceLoader) this.registry;
-		}
-		else {
+		} else {
+			// factory自己没实现加载资源,设置资源加载器，PathMatchingResourcePatternResolver
+			// 他内部有一个DefaultResourceLoader可以根据我们给的路径(classpath:bean.xml或C:\bean.xml)返回一个Resource
+			// 同时他扩展了功能，能通过通配符返回路径下多个资源.getResources("classpath*:");
 			this.resourceLoader = new PathMatchingResourcePatternResolver();
 		}
 
-		// Inherit Environment if possible
+		// 我们用的是BeanFactory比较简单并没有实现这个接口
+		// 作用是隔离环境,ApplicationContext就实现啦
 		if (this.registry instanceof EnvironmentCapable) {
 			this.environment = ((EnvironmentCapable) this.registry).getEnvironment();
-		}
-		else {
+		} else {
 			this.environment = new StandardEnvironment();
 		}
 	}

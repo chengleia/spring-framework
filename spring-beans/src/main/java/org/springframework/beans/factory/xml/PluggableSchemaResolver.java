@@ -154,6 +154,7 @@ public class PluggableSchemaResolver implements EntityResolver {
 					}
 					try {
 					    // 以 Properties 的方式，读取 schemaMappingsLocation
+						// META-INF/spring.schemas
 						Properties mappings = PropertiesLoaderUtils.loadAllProperties(this.schemaMappingsLocation, this.classLoader);
 						if (logger.isTraceEnabled()) {
 							logger.trace("Loaded schema mappings: " + mappings);

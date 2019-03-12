@@ -120,19 +120,13 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 */
 	@SuppressWarnings("deprecation")  // for Environment.acceptsProfiles(String...)
 	protected void doRegisterBeanDefinitions(Element root) {
-		// Any nested <beans> elements will cause recursion in this method. In
-		// order to propagate and preserve <beans> default-* attributes correctly,
-		// keep track of the current (parent) delegate, which may be null. Create
-		// the new (child) delegate with a reference to the parent for fallback purposes,
-		// then ultimately reset this.delegate back to its original (parent) reference.
-		// this behavior emulates a stack of delegates without actually necessitating one.
         // 记录老的 BeanDefinitionParserDelegate 对象
 		BeanDefinitionParserDelegate parent = this.delegate;
 		// 创建 BeanDefinitionParserDelegate 对象，并进行设置到 delegate
 		this.delegate = createDelegate(getReaderContext(), root, parent);
         //检查 <beans /> 根标签的命名空间是否为空，或者是 http://www.springframework.org/schema/beans
 		if (this.delegate.isDefaultNamespace(root)) {
-            // 处理 profile 属性。可参见《Spring3自定义环境配置 <beans profile="">》http://nassir.iteye.com/blog/1535799
+            // 处理 profile 属性。
 			String profileSpec = root.getAttribute(PROFILE_ATTRIBUTE);
 			if (StringUtils.hasText(profileSpec)) {
 			    // 使用分隔符切分，可能有多个 profile 。
@@ -157,7 +151,6 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		parseBeanDefinitions(root, this.delegate);
         // 解析后处理
 		postProcessXml(root);
-
 		// 设置 delegate 回老的 BeanDefinitionParserDelegate 对象
 		this.delegate = parent;
 	}
@@ -201,13 +194,17 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	}
 
 	private void parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate) {
-		if (delegate.nodeNameEquals(ele, IMPORT_ELEMENT)) { // import
+		if (delegate.nodeNameEquals(ele, IMPORT_ELEMENT)) {
+			// import
 			importBeanDefinitionResource(ele);
-		} else if (delegate.nodeNameEquals(ele, ALIAS_ELEMENT)) { // alias
+		} else if (delegate.nodeNameEquals(ele, ALIAS_ELEMENT)) {
+			// alias
 			processAliasRegistration(ele);
-		} else if (delegate.nodeNameEquals(ele, BEAN_ELEMENT)) { // bean
+		} else if (delegate.nodeNameEquals(ele, BEAN_ELEMENT)) {
+			// bean
 			processBeanDefinition(ele, delegate);
-		} else if (delegate.nodeNameEquals(ele, NESTED_BEANS_ELEMENT)) { // beans
+		} else if (delegate.nodeNameEquals(ele, NESTED_BEANS_ELEMENT)) {
+			// beans
 			// recurse
 			doRegisterBeanDefinitions(ele);
 		}

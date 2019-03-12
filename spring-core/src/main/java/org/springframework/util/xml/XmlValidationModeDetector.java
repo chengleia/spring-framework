@@ -85,13 +85,13 @@ public class XmlValidationModeDetector {
 		// Peek into the file to look for DOCTYPE.
 		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 		try {
-		    // 是否为 DTD 校验模式。默认为，非 DTD 模式，即 XSD 模式
+		    // 是否为DTD校验模式。默认为非DTD模式，即XSD模式
 			boolean isDtdValidated = false;
 			String content;
 			// 循环，逐行读取 XML 文件的内容
 			while ((content = reader.readLine()) != null) {
 				content = consumeCommentTokens(content);
-				// 跳过，如果是注释，或者
+				//如果是注释跳过
 				if (this.inComment || !StringUtils.hasText(content)) {
 					continue;
 				}
@@ -100,7 +100,9 @@ public class XmlValidationModeDetector {
 					isDtdValidated = true;
 					break;
 				}
-                // hasOpeningTag 方法会校验，如果这一行有 < ，并且 < 后面跟着的是字母，则返回 true 。
+                // hasOpeningTag 方法会校验，如果这一行有 < ，并且 < 后面跟着的是字母，
+				// 说明已经没找到<!DOCTYPE 这样的字符串
+				// 则返回 true。
 				if (hasOpeningTag(content)) {
 					// End of meaningful data...
 					break;
@@ -136,9 +138,12 @@ public class XmlValidationModeDetector {
 			return false;
 		}
 		int openTagIndex = content.indexOf('<');
-		return (openTagIndex > -1 // < 存在
-                && (content.length() > openTagIndex + 1) // < 后面还有内容
-                && Character.isLetter(content.charAt(openTagIndex + 1))); // < 后面的内容是字幕
+		// < 存在
+		// < 后面还有内容
+		// < 后面的内容是字母
+		return (openTagIndex > -1
+                && (content.length() > openTagIndex + 1)
+                && Character.isLetter(content.charAt(openTagIndex + 1)));
 	}
 
 	/**

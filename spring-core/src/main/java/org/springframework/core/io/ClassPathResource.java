@@ -76,12 +76,16 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 	 * @see ClassLoader#getResourceAsStream(String)
 	 */
 	public ClassPathResource(String path, @Nullable ClassLoader classLoader) {
+		//路径为空直接返回错误
 		Assert.notNull(path, "Path must not be null");
+		//去除相对路径
 		String pathToUse = StringUtils.cleanPath(path);
+		//如果路径第一行为/去除
 		if (pathToUse.startsWith("/")) {
 			pathToUse = pathToUse.substring(1);
 		}
 		this.path = pathToUse;
+		//获取类加载器
 		this.classLoader = (classLoader != null ? classLoader : ClassUtils.getDefaultClassLoader());
 	}
 
@@ -167,6 +171,7 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 	@Override
 	public InputStream getInputStream() throws IOException {
 		InputStream is;
+		//Class对象,这里不是用这方式初始化的
 		if (this.clazz != null) {
 			is = this.clazz.getResourceAsStream(this.path);
 		}
