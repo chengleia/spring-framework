@@ -12,8 +12,7 @@ import org.springframework.core.io.support.EncodedResource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class DefaultListableBeanFactoryTest {
 
@@ -27,10 +26,10 @@ public class DefaultListableBeanFactoryTest {
 		 **/
 
 		//<1>
-//		ApplicationContext context = new ClassPathXmlApplicationContext("bean.xml");
-//		//<2>
-//		HelloWorld helloWorld1 = (HelloWorld) context.getBean("helloWorld");
-//		helloWorld1.printHelloWord();
+		ApplicationContext context = new ClassPathXmlApplicationContext("bean.xml");
+		//<2>
+		HelloWorld helloWorld1 = (HelloWorld) context.getBean("helloWorld");
+		helloWorld1.printHelloWord();
 
 		// <1>
 		ClassPathResource resource = new ClassPathResource("bean.xml");
@@ -43,6 +42,14 @@ public class DefaultListableBeanFactoryTest {
 		// <5>
 		HelloWorld helloWorld2 = (HelloWorld)factory.getBean("helloWorld");
 		helloWorld2.printHelloWord();
+//
+//		Map<String, List<String>> map = new HashMap<>();
+//		List<String> list;
+//
+//
+//		// 使用 computeIfAbsent 可以这样写
+//		list = map.computeIfAbsent("list-1", k -> new ArrayList<>());
+//		list.add("one");
 	}
 
 }

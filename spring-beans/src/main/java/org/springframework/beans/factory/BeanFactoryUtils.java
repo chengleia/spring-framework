@@ -75,6 +75,7 @@ public abstract class BeanFactoryUtils {
      *
      * 如果 name 以 “&” 为前缀，那么会去掉该 "&" 。
      * 例如，name = "&studentService" ，则会是 name = "studentService"。
+	 * 详情：https://blog.csdn.net/u013185616/article/details/52335864/
      *
 	 * Return the actual bean name, stripping out the factory dereference
 	 * prefix (if any, also stripping repeated factory prefixes if found).
