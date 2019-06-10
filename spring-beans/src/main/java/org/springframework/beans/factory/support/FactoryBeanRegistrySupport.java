@@ -105,7 +105,6 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
                     // 为空，则从 FactoryBean 中获取对象
                     object = doGetObjectFromFactoryBean(factory, beanName);
                     // 从缓存中获取
-                    // TODO 芋艿，具体原因
                     // Only post-process and store if not put there already during getObject() call above
 					// (e.g. because of circular reference processing triggered by custom getBean calls)
 					Object alreadyThere = this.factoryBeanObjectCache.get(beanName);

@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chenglei:beans xmlns:chenglei="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
-profile="test">
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 
-	<chenglei:bean id="ss" class="org.springframework.study.HelloWorld"/>
-	<chenglei:bean id="helloWorld" class="org.springframework.study.HelloWorld" parent="ss" />
-
-	<chenglei:beans profile="gggggg">
-
-	</chenglei:beans>
-
-</chenglei:beans>
+	<bean id="helloWordTwo" class="org.springframework.study.HelloWordTwo"/>
+	<bean id="helloWorld" class="org.springframework.study.HelloWorld" scope="request">
+		<property name="helloWordTwo" ref="helloWordTwo"></property>
+	</bean>
+</beans>

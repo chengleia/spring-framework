@@ -43,18 +43,32 @@ public class SimpleAliasRegistry implements AliasRegistry {
 	/** Logger available to subclasses. */
 	protected final Log logger = LogFactory.getLog(getClass());
 
-	/** Map from alias to canonical name. */
-	// key: alias
-    // value: beanName
+	/**
+	 * Map from alias to canonical name.
+	 *
+	 * key: alias value: beanName
+	 * key: alias value: alias
+	 *
+	 * */
 	private final Map<String, String> aliasMap = new ConcurrentHashMap<>(16);
 
 	@Override
 	public void registerAlias(String name, String alias) {
-        // 校验 name 、 alias
 		Assert.hasText(name, "'name' must not be empty");
 		Assert.hasText(alias, "'alias' must not be empty");
 		synchronized (this.aliasMap) {
-            // name == alias 则去掉alias
+            // 当name==alias时 这个alias就是id，则去掉alias
+			// 这里直接return就好了，不知道为什么remove..
+			// 解析xml时已进验证了 alias不可能被别的bean的id或者alias用...
+
+			// 估计是 怕有人手动注入definition
+			// 例如 beanA 注册了 id A alias B C 此时id一定不包含在alias
+			// 有人注册了 beanB  id B alias B 如果时候直接return 这个B既是beanA的别名又是beanB的id
+			// 这个要后面做测试证明了
+			// ps证明这个想法是错的，B取到的是A因为有个canonicalName方法会把B指向A
+
+			// todo 理解为什么remove
+
 			if (alias.equals(name)) {
 				this.aliasMap.remove(alias);
 				if (logger.isDebugEnabled()) {
@@ -80,7 +94,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 								registeredName + "' with new target name '" + name + "'");
 					}
 				}
-                // 校验，是否存在循环指向
+                // 校验，是否存在循环指向  aliasA -> beanA -> aliasB -> aliasA
 				checkForAliasCircle(name, alias);
                 // 注册 alias
 				this.aliasMap.put(alias, name);
@@ -105,16 +119,25 @@ public class SimpleAliasRegistry implements AliasRegistry {
 	 * @param alias the alias to look for
 	 * @since 4.2.1
 	 */
+	// 这里name->别名，alias->beanName 坑爹的传参
+	// 递归的思路要加强啊...
 	public boolean hasAlias(String name, String alias) {
+		// 取出所有key - value 键值对，来循环
 		for (Map.Entry<String, String> entry : this.aliasMap.entrySet()) {
+			// 取出value,可能是beanName，也可能是中间alias
 			String registeredName = entry.getValue();
+			// 如果存在传入别名等于registeredName
 			if (registeredName.equals(name)) {
+				// 获取aliasMap中的key，即alias
 				String registeredAlias = entry.getKey();
+				// 如果registeredAlias = alias，会造成registeredAlias -> registeredName = name-> alias 这样的环，直接返回true
+				// 如果不相等 再看检查registeredAlias，alias这两个有没有环
 				if (registeredAlias.equals(alias) || hasAlias(registeredAlias, alias)) {
 					return true;
 				}
 			}
 		}
+		// 遍历完都不存在这个别名，即可以注册
 		return false;
 	}
 
@@ -223,7 +246,9 @@ public class SimpleAliasRegistry implements AliasRegistry {
 		String canonicalName = name;
 		// Handle aliasing...
 		String resolvedName;
-		// 循环，从 aliasMap 中，获取到最终的 beanName
+		// 从 aliasMap 中，获取到最终的 beanName
+		// 这里如果是 name - > beanName 、beanName->name 这样会死循环
+		// 在注册别名时解决的
 		do {
 			resolvedName = this.aliasMap.get(canonicalName);
 			if (resolvedName != null) {

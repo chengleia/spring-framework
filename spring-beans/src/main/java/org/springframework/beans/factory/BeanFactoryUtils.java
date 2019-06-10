@@ -25,6 +25,7 @@ import org.springframework.util.StringUtils;
 import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 /**
  * Convenience methods operating on bean factories, in particular
@@ -71,12 +72,6 @@ public abstract class BeanFactoryUtils {
 	}
 
 	/**
-     * 去除 FactoryBean 的修饰符 $
-     *
-     * 如果 name 以 “&” 为前缀，那么会去掉该 "&" 。
-     * 例如，name = "&studentService" ，则会是 name = "studentService"。
-	 * 详情：https://blog.csdn.net/u013185616/article/details/52335864/
-     *
 	 * Return the actual bean name, stripping out the factory dereference
 	 * prefix (if any, also stripping repeated factory prefixes if found).
 	 * @param name the name of the bean
@@ -85,12 +80,13 @@ public abstract class BeanFactoryUtils {
 	 */
 	public static String transformedBeanName(String name) {
 		Assert.notNull(name, "'name' must not be null");
-		if (!name.startsWith(BeanFactory.FACTORY_BEAN_PREFIX)) { // BeanFactory.FACTORY_BEAN_PREFIX = $
+		// 如果name 不是以&开头 直接返回
+		if (!name.startsWith(BeanFactory.FACTORY_BEAN_PREFIX)) {
 			return name;
 		}
-		// computeIfAbsent 方法，分成两种情况：
-        //      1. 未存在，则进行计算执行，并将结果添加到缓存、
-        //      2. 已存在，则直接返回，无需计算。
+		// computeIfAbsent 方法：
+        // 1. 未存在，则进行计算执行，并将结果添加到缓存、
+        // 2. 已存在，则直接返回，无需计算。
 		return transformedBeanNameCache.computeIfAbsent(name, beanName -> {
 			do {
 				beanName = beanName.substring(BeanFactory.FACTORY_BEAN_PREFIX.length());

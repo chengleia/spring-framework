@@ -409,6 +409,10 @@ public class BeanDefinitionParserDelegate {
 		}
 
         // 检查 beanName 的唯一性
+		// 如果这个bean是顶级bean  要检查这个beanName有没有被别的bean的beanName或者aliases使用
+		// 如：
+		// <bean id="helloWordTwo" name="q" class="org.springframework.study.HelloWordTwo"/>
+		// <bean id="helloWorld" name="helloWordTwo" class="org.springframework.study.HelloWorld">
 		if (containingBean == null) {
 			checkNameUniqueness(beanName, aliases, ele);
 		}

@@ -1,18 +1,11 @@
 package org.springframework.study;
 
 import org.junit.Test;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.core.env.EnvironmentCapable;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.support.EncodedResource;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.*;
 
 public class DefaultListableBeanFactoryTest {
 
@@ -25,11 +18,9 @@ public class DefaultListableBeanFactoryTest {
 		 	其高级容器ApplicationContext也是通过持有DefaultListableBeanFactory引用，在基础IoC容器之上进行特性增强
 		 **/
 
-		//<1>
-		ApplicationContext context = new ClassPathXmlApplicationContext("bean.xml");
-		//<2>
-		HelloWorld helloWorld1 = (HelloWorld) context.getBean("helloWorld");
-		helloWorld1.printHelloWord();
+//		ApplicationContext context = new ClassPathXmlApplicationContext("bean.xml");
+//		HelloWorld helloWorld1 = (HelloWorld) context.getBean("helloWorld");
+//		helloWorld1.printHelloWord();
 
 		// <1>
 		ClassPathResource resource = new ClassPathResource("bean.xml");
@@ -39,10 +30,23 @@ public class DefaultListableBeanFactoryTest {
 		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(factory);
 		// <4>
 		reader.loadBeanDefinitions(resource);
+//		BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder
+//				.genericBeanDefinition(HelloWorld.class);
+//		factory.registerBeanDefinition("helloWordTwo", beanDefinitionBuilder.getBeanDefinition());
+//		factory.registerAlias("q","q");
+//		factory.registerAlias("q","z");
 		// <5>
-		HelloWorld helloWorld2 = (HelloWorld)factory.getBean("helloWorld");
-		helloWorld2.printHelloWord();
-//
+		HelloWorld helloWorld = (HelloWorld)factory.getBean("helloWorld",new Object[]{2});
+		HelloWorld helloWorld2 = (HelloWorld)factory.getBean("helloWorld",new Object[]{1});
+		HelloWorld helloWorld1 = (HelloWorld)factory.getBean("helloWorld");
+
+//		HelloWordTwo helloWorld2 = (HelloWordTwo)factory.getBean("helloWordTwo",new Object[]{1});
+//		HelloWordTwo helloWorld = (HelloWordTwo)factory.getBean("helloWordTwo",new Object[]{2});
+//		HelloWordTwo helloWorld1 = (HelloWordTwo)factory.getBean("helloWordTwo");
+
+		System.out.println(helloWorld==helloWorld1);
+		System.out.println(helloWorld==helloWorld2);
+
 //		Map<String, List<String>> map = new HashMap<>();
 //		List<String> list;
 //
@@ -50,6 +54,7 @@ public class DefaultListableBeanFactoryTest {
 //		// 使用 computeIfAbsent 可以这样写
 //		list = map.computeIfAbsent("list-1", k -> new ArrayList<>());
 //		list.add("one");
+
 	}
 
 }
