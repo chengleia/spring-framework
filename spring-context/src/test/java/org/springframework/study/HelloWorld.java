@@ -1,26 +1,19 @@
 package org.springframework.study;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 public class HelloWorld {
+
+	public HelloWorld helloWorld;
+
+
+	public HelloWorld getHelloWorld() {
+		return helloWorld;
+	}
+
+	public void setHelloWorld(HelloWorld helloWorld) {
+		this.helloWorld = helloWorld;
+	}
 
 	public HelloWorld(){
 
 	}
-
-	public HelloWorld(int i){
-		System.out.println(i);
-	}
-
-	@Autowired
-	public HelloWordTwo helloWordTwo;
-
-	public void printHelloWord(){
-		System.out.println("我是一只HelloWord");
-	}
-
-	public void setHelloWordTwo(HelloWordTwo helloWordTwo) {
-		this.helloWordTwo = helloWordTwo;
-	}
-
 }

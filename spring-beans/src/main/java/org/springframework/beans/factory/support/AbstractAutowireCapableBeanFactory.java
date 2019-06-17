@@ -428,22 +428,29 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			logger.trace("Creating instance of bean '" + beanName + "'");
 		}
 		RootBeanDefinition mbdToUse = mbd;
+        // 确保此时的 bean 已经被解析了
+        // 如果获取的class 属性不为null，则克隆该 BeanDefinition
+        // 主要是因为该动态解析的 class 无法保存到到共享的 BeanDefinition
+
+		// 是解析beanClass属性，在Spring加载完xml文件后，如果xmlreader没指定类加载器，beanClass是个String，如果有类加载器，则是大Class
+		Class<?> resolvedClass = resolveBeanClass(mbd, beanName);
 
 		// Make sure bean class is actually resolved at this point, and
 		// clone the bean definition in case of a dynamically resolved Class
 		// which cannot be stored in the shared merged bean definition.
-        // 确保此时的 bean 已经被解析了
-        // 如果获取的class 属性不为null，则克隆该 BeanDefinition
-        // 主要是因为该动态解析的 class 无法保存到到共享的 BeanDefinition
-		Class<?> resolvedClass = resolveBeanClass(mbd, beanName);
+
+		// 假如解析出了resolvedClass，但是我BeanClass还是String 说明是resolveBeanClass()方法里面自定义扩展获得的Class
 		if (resolvedClass != null && !mbd.hasBeanClass() && mbd.getBeanClassName() != null) {
+			// 手动生成一个深拷贝一个beanDefinition 不改原来的beanDefinition
 			mbdToUse = new RootBeanDefinition(mbd);
 			mbdToUse.setBeanClass(resolvedClass);
 		}
 
+
 		// Prepare method overrides.
 		try {
-            // 验证和准备覆盖方法
+            // 验证和准备覆盖方法，见xml解析的时候的lookup-method和replace-method封装成MethodOverride放在methodOverrides
+			// 这里只是将这些MethodOverride取出来，并遍历beanClass看看是不是重载的设置Overloaded属性，算是小优化，免去了后面需要判断
 			mbdToUse.prepareMethodOverrides();
 		} catch (BeanDefinitionValidationException ex) {
 			throw new BeanDefinitionStoreException(mbdToUse.getResourceDescription(),
@@ -454,6 +461,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
             // 实例化的前置处理
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
+			// 这个时候bean不为空直接返回
 			if (bean != null) {
 				return bean;
 			}
@@ -1040,15 +1048,21 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	@Nullable
 	protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition mbd) {
 		Object bean = null;
+		// 判断mdb是否设置了beforeInstantiationResolved属性，
+		// 只要配置了InstantiationAwareBeanPostProcessor接口的实现类，
+		// 那么beforeInstantiationResolved就是true。
+		// todo 找到设置beforeInstantiationResolved的地方 不然默认false不是进不去吗
 		if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved)) {
 			// Make sure bean class is actually resolved at this point.
+
+			// mdb本身不是合成的 且 存在BeanPostProcessor todo Synthetic到底是干嘛的
 			if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 				Class<?> targetType = determineTargetType(beanName, mbd);
 				if (targetType != null) {
-				    // 前置
+				    // 接口BeanPostProcessor前置方法处理
 					bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
 					if (bean != null) {
-					    // 后置
+					    // 接口BeanPostProcessor后置处理方法
 						bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
 					}
 				}
@@ -1072,6 +1086,26 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	@Nullable
 	protected Object applyBeanPostProcessorsBeforeInstantiation(Class<?> beanClass, String beanName) {
 		for (BeanPostProcessor bp : getBeanPostProcessors()) {
+			/**
+				为什么是InstantiationAwareBeanPostProcessor 而不是 BeanPostProcessor 啊
+
+				解释：这里调用postProcessBeforeInstantiation    Instantiation！实例化表示对象还未创建,这是他比父接口多的方法
+				BeanPostProcessor是在调用构造方法之前后，实际上对象并未改变
+				而postProcessBeforeInstantiation 可以返回一个对象不让spring创建本来对象
+
+				这里可以理解为:
+				postProcessBeforeInstantiation			ps 如果这里返回不为null 下面直接到 postProcessAfterInitialization
+				User 被实例化                            ps 构造方法
+				postProcessAfterInstantiation
+				postProcessPropertyValues
+				设置：波波烤鸭							ps xml 中 <propertry></propertry>
+				postProcessBeforeInitialization
+				自定义初始化的方法....                    ps xml  中 配置的init-method
+				postProcessAfterInitialization
+
+				https://blog.csdn.net/qq_38526573/article/details/88091702 这篇文章不错
+			 */
+
 			if (bp instanceof InstantiationAwareBeanPostProcessor) {
 				InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
 				Object result = ibp.postProcessBeforeInstantiation(beanClass, beanName);
@@ -1097,10 +1131,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 */
 	protected BeanWrapper createBeanInstance(String beanName, RootBeanDefinition mbd, @Nullable Object[] args) {
 		// Make sure bean class is actually resolved at this point.
-        // 解析 bean ，将 bean 类名解析为 class 引用。
+        // 确保这个时候beanClass已经加载  单咋感觉有点多余...一定加载了啊
 		Class<?> beanClass = resolveBeanClass(mbd, beanName);
 
-		if (beanClass != null && !Modifier.isPublic(beanClass.getModifiers()) && !mbd.isNonPublicAccessAllowed()) { // 校验
+		// 校验
+		if (beanClass != null && !Modifier.isPublic(beanClass.getModifiers()) && !mbd.isNonPublicAccessAllowed()) {
 			throw new BeanCreationException(mbd.getResourceDescription(), beanName,
 					"Bean class isn't public, and non-public access not allowed: " + beanClass.getName());
 		}

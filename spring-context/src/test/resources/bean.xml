@@ -5,7 +5,12 @@
 
 
 	<bean id="helloWordTwo" class="org.springframework.study.HelloWordTwo"/>
-	<bean id="helloWorld" class="org.springframework.study.HelloWorld" scope="request">
-		<property name="helloWordTwo" ref="helloWordTwo"></property>
+	<bean id="helloWorld" name="q" class="org.springframework.study.HelloWorld" depends-on="helloWordTwo">
+		<property name="helloWorld" ref="helloWorld"></property>
 	</bean>
+
+	<bean id="cl" class="org.springframework.study.TestFactory" factory-method="get"  scope="prototype" ></bean>
+
+	<!--	<bean id="fb" class="org.springframework.study.TestFactoryBean" scope="prototype"></bean>-->
+
 </beans>

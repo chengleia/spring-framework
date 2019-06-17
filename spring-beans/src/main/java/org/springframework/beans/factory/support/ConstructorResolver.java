@@ -383,7 +383,10 @@ class ConstructorResolver {
         // 向BeanWrapper对象中添加 ConversionService 对象和属性编辑器 PropertyEditor 对象
         this.beanFactory.initBeanWrapper(bw);
 
-        // 获得 factoryBean、factoryClass、isStatic、factoryBeanName 属性
+        // 获得  factoryBean、
+		//      factoryClass、
+		//      isStatic、
+		//      factoryBeanName 属性
 		Object factoryBean;
 		Class<?> factoryClass;
 		boolean isStatic;

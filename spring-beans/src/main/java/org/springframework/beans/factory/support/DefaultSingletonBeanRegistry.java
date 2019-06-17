@@ -214,11 +214,13 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
                 // 如果在早期单例对象缓存中也没有，并且允许创建早期单例对象引用
                 if (singletonObject == null && allowEarlyReference) {
                     // 从 singletonFactories 中获取对应的 ObjectFactory
+					// todo 这个ObjectFactory是哪里来的
 					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
 					if (singletonFactory != null) {
 					    // 如果存在单例对象工厂，则通过工厂创建一个单例对象
 						singletonObject = singletonFactory.getObject();
 						// 添加 singletonObject 到 earlySingletonObjects 中
+						//todo 这里为什么没把bean放到isSingletonCurrentlyInCreation 的Set中
 						this.earlySingletonObjects.put(beanName, singletonObject);
 						// 从 singletonFactories 中移除对应的 ObjectFactory
 						//

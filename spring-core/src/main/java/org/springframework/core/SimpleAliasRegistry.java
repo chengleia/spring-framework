@@ -64,10 +64,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 			// 估计是 怕有人手动注入definition
 			// 例如 beanA 注册了 id A alias B C 此时id一定不包含在alias
 			// 有人注册了 beanB  id B alias B 如果时候直接return 这个B既是beanA的别名又是beanB的id
-			// 这个要后面做测试证明了
-			// ps证明这个想法是错的，B取到的是A因为有个canonicalName方法会把B指向A
-
-			// todo 理解为什么remove
+			// B取到的是A因为有个canonicalName方法会把B指向A
 
 			if (alias.equals(name)) {
 				this.aliasMap.remove(alias);

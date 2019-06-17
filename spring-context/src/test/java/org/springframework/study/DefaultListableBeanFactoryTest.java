@@ -1,8 +1,6 @@
 package org.springframework.study;
 
 import org.junit.Test;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.core.io.ClassPathResource;
@@ -28,24 +26,53 @@ public class DefaultListableBeanFactoryTest {
 		DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
 		// <3>
 		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(factory);
+		//这里设置了的话会在加载xml时就将  beandefinition的  beanClass从 String - > Class
+		//reader.setBeanClassLoader(this.getClass().getClassLoader());
 		// <4>
 		reader.loadBeanDefinitions(resource);
 //		BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder
-//				.genericBeanDefinition(HelloWorld.class);
-//		factory.registerBeanDefinition("helloWordTwo", beanDefinitionBuilder.getBeanDefinition());
+//				.genericBeanDefinition(HelloWordTwo.class);
+//		factory.registerBeanDefinition("z", beanDefinitionBuilder.getBeanDefinition());
 //		factory.registerAlias("q","q");
-//		factory.registerAlias("q","z");
-		// <5>
-		HelloWorld helloWorld = (HelloWorld)factory.getBean("helloWorld",new Object[]{2});
-		HelloWorld helloWorld2 = (HelloWorld)factory.getBean("helloWorld",new Object[]{1});
-		HelloWorld helloWorld1 = (HelloWorld)factory.getBean("helloWorld");
+//		Object fb = factory.getBean("q");
+//		System.out.println(fb.getClass());
+//
+		//工厂方法单例测试
+		Object obj = factory.getBean("cl");
+		Object obj1 = factory.getBean("cl");
+		System.out.println(obj == obj1);
+
+
+
+
+		// factorybean的 scope和issigton方法作用
+//		FactoryBean fb = (FactoryBean)factory.getBean("&fb");
+//		FactoryBean fb2 = (FactoryBean)factory.getBean("&fb");
+//
+//		HelloWordTwo fbb = (HelloWordTwo)factory.getBean("fb");
+//		HelloWordTwo fbb1 = (HelloWordTwo)factory.getBean("fb");
+//
+//		System.out.println(fb);
+//		System.out.println(fb2);
+//		System.out.println(fbb);
+//		System.out.println(fbb1);
+//
+//		System.out.println(fb==fb2);
+//		System.out.println(fbb==fbb1);
+
+
+//		HelloWorld helloWorld = (HelloWorld)factory.getBean("q");
+//		System.out.println(helloWorld);
+//		System.out.println(helloWorld.helloWorld);
+//		HelloWorld helloWorld2 = (HelloWorld)factory.getBean("helloWorld",new Object[]{1});
+//		HelloWorld helloWorld1 = (HelloWorld)factory.getBean("helloWorld");
 
 //		HelloWordTwo helloWorld2 = (HelloWordTwo)factory.getBean("helloWordTwo",new Object[]{1});
 //		HelloWordTwo helloWorld = (HelloWordTwo)factory.getBean("helloWordTwo",new Object[]{2});
 //		HelloWordTwo helloWorld1 = (HelloWordTwo)factory.getBean("helloWordTwo");
-
-		System.out.println(helloWorld==helloWorld1);
-		System.out.println(helloWorld==helloWorld2);
+//
+//		System.out.println(helloWorld==helloWorld1);
+//		System.out.println(helloWorld==helloWorld2);
 
 //		Map<String, List<String>> map = new HashMap<>();
 //		List<String> list;
