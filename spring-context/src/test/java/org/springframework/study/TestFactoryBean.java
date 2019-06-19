@@ -6,12 +6,12 @@ public class TestFactoryBean implements FactoryBean {
 
 	@Override
 	public Object getObject() throws Exception {
-		return new HelloWordTwo();
+		return new HelloWorldTwo();
 	}
 
 	@Override
 	public Class<?> getObjectType() {
-		return HelloWordTwo.class;
+		return HelloWorldTwo.class;
 	}
 
 	@Override

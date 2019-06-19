@@ -16,9 +16,9 @@ public class DefaultListableBeanFactoryTest {
 		 	其高级容器ApplicationContext也是通过持有DefaultListableBeanFactory引用，在基础IoC容器之上进行特性增强
 		 **/
 
-//		ApplicationContext context = new ClassPathXmlApplicationContext("bean.xml");
-//		HelloWorld helloWorld1 = (HelloWorld) context.getBean("helloWorld");
-//		helloWorld1.printHelloWord();
+		//ApplicationContext context = new ClassPathXmlApplicationContext("bean.xml");
+		//HelloWorld helloWorld = (HelloWorld) context.getBean("helloWorld");
+
 
 		// <1>
 		ClassPathResource resource = new ClassPathResource("bean.xml");
@@ -31,16 +31,16 @@ public class DefaultListableBeanFactoryTest {
 		// <4>
 		reader.loadBeanDefinitions(resource);
 //		BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder
-//				.genericBeanDefinition(HelloWordTwo.class);
+//				.genericBeanDefinition(HelloWorldTwo.class);
 //		factory.registerBeanDefinition("z", beanDefinitionBuilder.getBeanDefinition());
 //		factory.registerAlias("q","q");
 //		Object fb = factory.getBean("q");
 //		System.out.println(fb.getClass());
 //
-		//工厂方法单例测试
-		Object obj = factory.getBean("cl");
-		Object obj1 = factory.getBean("cl");
-		System.out.println(obj == obj1);
+//		//工厂方法单例测试
+//		Object obj = factory.getBean("cl");
+//		Object obj1 = factory.getBean("cl");
+//		System.out.println(obj == obj1);
 
 
 
@@ -49,8 +49,8 @@ public class DefaultListableBeanFactoryTest {
 //		FactoryBean fb = (FactoryBean)factory.getBean("&fb");
 //		FactoryBean fb2 = (FactoryBean)factory.getBean("&fb");
 //
-//		HelloWordTwo fbb = (HelloWordTwo)factory.getBean("fb");
-//		HelloWordTwo fbb1 = (HelloWordTwo)factory.getBean("fb");
+//		HelloWorldTwo fbb = (HelloWorldTwo)factory.getBean("fb");
+//		HelloWorldTwo fbb1 = (HelloWorldTwo)factory.getBean("fb");
 //
 //		System.out.println(fb);
 //		System.out.println(fb2);
@@ -61,15 +61,18 @@ public class DefaultListableBeanFactoryTest {
 //		System.out.println(fbb==fbb1);
 
 
-//		HelloWorld helloWorld = (HelloWorld)factory.getBean("q");
-//		System.out.println(helloWorld);
+		HelloWorld helloWorld = (HelloWorld)factory.getBean("helloWorld");
+		helloWorld.ttt();
+
+		System.out.println(helloWorld.i);
+
 //		System.out.println(helloWorld.helloWorld);
 //		HelloWorld helloWorld2 = (HelloWorld)factory.getBean("helloWorld",new Object[]{1});
 //		HelloWorld helloWorld1 = (HelloWorld)factory.getBean("helloWorld");
 
-//		HelloWordTwo helloWorld2 = (HelloWordTwo)factory.getBean("helloWordTwo",new Object[]{1});
-//		HelloWordTwo helloWorld = (HelloWordTwo)factory.getBean("helloWordTwo",new Object[]{2});
-//		HelloWordTwo helloWorld1 = (HelloWordTwo)factory.getBean("helloWordTwo");
+//		HelloWorldTwo helloWorld2 = (HelloWorldTwo)factory.getBean("helloWorldTwo",new Object[]{1});
+//		HelloWorldTwo helloWorld = (HelloWorldTwo)factory.getBean("helloWorldTwo",new Object[]{2});
+//		HelloWorldTwo helloWorld1 = (HelloWorldTwo)factory.getBean("helloWorldTwo");
 //
 //		System.out.println(helloWorld==helloWorld1);
 //		System.out.println(helloWorld==helloWorld2);

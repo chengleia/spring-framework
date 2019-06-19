@@ -2,18 +2,20 @@ package org.springframework.study;
 
 public class HelloWorld {
 
-	public HelloWorld helloWorld;
+	public int i=0;
+
+	public HelloWorldTwo helloWorldTwo;
 
 
-	public HelloWorld getHelloWorld() {
-		return helloWorld;
+	public void ttt(){
+		System.out.println("zzzzzzzz");
 	}
 
-	public void setHelloWorld(HelloWorld helloWorld) {
-		this.helloWorld = helloWorld;
+	public HelloWorldTwo getHelloWorldTwo() {
+		return helloWorldTwo;
 	}
 
-	public HelloWorld(){
-
+	public void setHelloWorldTwo(HelloWorldTwo helloWorldTwo) {
+		this.helloWorldTwo = helloWorldTwo;
 	}
 }

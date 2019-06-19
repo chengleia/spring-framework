@@ -1,16 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
 
-	<bean id="helloWordTwo" class="org.springframework.study.HelloWordTwo"/>
-	<bean id="helloWorld" name="q" class="org.springframework.study.HelloWorld" depends-on="helloWordTwo">
-		<property name="helloWorld" ref="helloWorld"></property>
+	<bean id="helloWorldTwo" class="org.springframework.study.HelloWorldTwo"/>
+
+	<bean id="helloWorld" name="q" class="org.springframework.study.HelloWorld">
+		<property name="helloWorldTwo" ref="helloWorldTwo"/>
 	</bean>
 
-	<bean id="cl" class="org.springframework.study.TestFactory" factory-method="get"  scope="prototype" ></bean>
+	<bean id="testBeanPostProcessor" class="org.springframework.study.TestBeanPostProcessor"/>
 
-	<!--	<bean id="fb" class="org.springframework.study.TestFactoryBean" scope="prototype"></bean>-->
+
+	<bean id="aop" class="org.springframework.study.TestAop"></bean>
+
+	<aop:config>
+		<aop:pointcut expression="execution(* org.springframework.study.*.*(..))" id="pt"/>
+		<aop:aspect id="asp" ref="aop">
+			<aop:after method="methodAfter" pointcut-ref="pt"/>
+		</aop:aspect>
+	</aop:config>
+
+
+	<!--<bean id="cl" class="org.springframework.study.TestFactory" factory-method="get"  scope="prototype" ></bean>-->
+	<!--<bean id="fb" class="org.springframework.study.TestFactoryBean" scope="prototype"></bean>-->
 
 </beans>

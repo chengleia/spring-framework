@@ -543,17 +543,23 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Eagerly cache singletons to be able to resolve circular references
 		// even when triggered by lifecycle interfaces like BeanFactoryAware.
         // 解决单例模式的循环依赖
-        boolean earlySingletonExposure = (mbd.isSingleton() // 单例模式
-                && this.allowCircularReferences // 运行循环依赖
-                && isSingletonCurrentlyInCreation(beanName)); // 当前单例 bean 是否正在被创建
+		// 单例模式 && 运行循环依赖 && 当前单例bean是否正在被创建(这个是设置在调用getSingleton方法add进去的)
+		boolean earlySingletonExposure = (mbd.isSingleton() && this.allowCircularReferences && isSingletonCurrentlyInCreation(beanName));
+
 		if (earlySingletonExposure) {
 			if (logger.isTraceEnabled()) {
 				logger.trace("Eagerly caching bean '" + beanName +
 						"' to allow for resolving potential circular references");
 			}
+			// 可以提前曝光
             // 提前将创建的 bean 实例加入到 singletonFactories 中
             // 这里是为了后期避免循环依赖
-			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
+			addSingletonFactory(beanName, new ObjectFactory<Object>() {
+				@Override
+				public Object getObject() throws BeansException {
+					return AbstractAutowireCapableBeanFactory.this.getEarlyBeanReference(beanName, mbd, bean);
+				}
+			});
 		}
 
 		// Initialize the bean instance.
@@ -1409,6 +1415,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			// Add property values based on autowire by type if applicable.
             // 根据类型自动注入
 			if (mbd.getResolvedAutowireMode() == AUTOWIRE_BY_TYPE) {
+				//todo 按类型注入
 				autowireByType(beanName, mbd, bw, newPvs);
 			}
 			pvs = newPvs;
@@ -1577,7 +1584,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		for (PropertyDescriptor pd : pds) {
 			if (pd.getWriteMethod() != null // 有可写方法
                     && !isExcludedFromDependencyCheck(pd) // 依赖检测中没有被忽略
+					// 有的属性不包含在要注入的情况
                     && !pvs.contains(pd.getName()) // pvs 不包含该属性名
+					//todo 如果注入基本属性会怎么样
                     && !BeanUtils.isSimpleProperty(pd.getPropertyType())) { // 不是简单属性类型
 				result.add(pd.getName()); // 添加到 result 中
 			}
