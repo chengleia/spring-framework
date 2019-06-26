@@ -16,26 +16,29 @@ public class DefaultListableBeanFactoryTest {
 		 	其高级容器ApplicationContext也是通过持有DefaultListableBeanFactory引用，在基础IoC容器之上进行特性增强
 		 **/
 
-		//ApplicationContext context = new ClassPathXmlApplicationContext("bean.xml");
-		//HelloWorld helloWorld = (HelloWorld) context.getBean("helloWorld");
+//		ApplicationContext context = new ClassPathXmlApplicationContext("bean.xml");
+//		Object b =  context.getBean("b");
 
-
-		// <1>
 		ClassPathResource resource = new ClassPathResource("bean.xml");
-		// <2>
+
 		DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
-		// <3>
+
 		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(factory);
 		//这里设置了的话会在加载xml时就将  beandefinition的  beanClass从 String - > Class
 		//reader.setBeanClassLoader(this.getClass().getClassLoader());
-		// <4>
 		reader.loadBeanDefinitions(resource);
+
 //		BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder
 //				.genericBeanDefinition(HelloWorldTwo.class);
 //		factory.registerBeanDefinition("z", beanDefinitionBuilder.getBeanDefinition());
 //		factory.registerAlias("q","q");
-//		Object fb = factory.getBean("q");
-//		System.out.println(fb.getClass());
+
+//		Object a = factory.getBean("a");
+		TestBeanPostProcessor testBeanPostProcessor = new TestBeanPostProcessor();
+		factory.addBeanPostProcessor(testBeanPostProcessor);
+		TestBeanPostProcessor test = (TestBeanPostProcessor)factory.getBean("testBeanPostProcessor");
+		test.display();
+
 //
 //		//工厂方法单例测试
 //		Object obj = factory.getBean("cl");
@@ -60,11 +63,12 @@ public class DefaultListableBeanFactoryTest {
 //		System.out.println(fb==fb2);
 //		System.out.println(fbb==fbb1);
 
+//
+//		A a = (A)factory.getBean("a");
+//		System.out.println(a);
 
-		HelloWorld helloWorld = (HelloWorld)factory.getBean("helloWorld");
-		helloWorld.ttt();
-
-		System.out.println(helloWorld.i);
+//
+//		System.out.println(helloWorld.i);
 
 //		System.out.println(helloWorld.helloWorld);
 //		HelloWorld helloWorld2 = (HelloWorld)factory.getBean("helloWorld",new Object[]{1});
