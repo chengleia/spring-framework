@@ -3,6 +3,8 @@ package org.springframework.study;
 import org.junit.Test;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 
 public class DefaultListableBeanFactoryTest {
@@ -17,7 +19,8 @@ public class DefaultListableBeanFactoryTest {
 		 **/
 
 //		ApplicationContext context = new ClassPathXmlApplicationContext("bean.xml");
-//		Object b =  context.getBean("b");
+//		A a =  (A)context.getBean("a");
+//		System.out.println(a.getB());
 
 		ClassPathResource resource = new ClassPathResource("bean.xml");
 
@@ -33,7 +36,7 @@ public class DefaultListableBeanFactoryTest {
 //		factory.registerBeanDefinition("z", beanDefinitionBuilder.getBeanDefinition());
 //		factory.registerAlias("q","q");
 
-//		Object a = factory.getBean("a");
+//		Object a1 = factory.getBean("a");
 		TestBeanPostProcessor testBeanPostProcessor = new TestBeanPostProcessor();
 		factory.addBeanPostProcessor(testBeanPostProcessor);
 		TestBeanPostProcessor test = (TestBeanPostProcessor)factory.getBean("testBeanPostProcessor");

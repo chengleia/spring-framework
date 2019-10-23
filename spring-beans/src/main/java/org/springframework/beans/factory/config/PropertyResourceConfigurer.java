@@ -93,10 +93,16 @@ public abstract class PropertyResourceConfigurer extends PropertiesLoaderSupport
 	}
 
 	/**
+	 * 转换给定的 合并的props里面的value，
+	 * 必要时转换属性值。然后将处理结果。
+	 * <p>默认实现将为每个属性值调用{@link #convertPropertyValue} ，
+	 * 用转换后的值替换原始值。
+	 *
 	 * Convert the given merged properties, converting property values
 	 * if necessary. The result will then be processed.
 	 * <p>The default implementation will invoke {@link #convertPropertyValue}
 	 * for each property value, replacing the original with the converted value.
+	 *
 	 * @param props the Properties to convert
 	 * @see #processProperties
 	 */
@@ -113,6 +119,9 @@ public abstract class PropertyResourceConfigurer extends PropertiesLoaderSupport
 	}
 
 	/**
+	 * 将属性源中的给定属性转换为应该应用的值*。
+	 * <p>默认实现调用{@link #convertPropertyValue（String）}。
+	 *
 	 * Convert the given property from the properties source to the value
 	 * which should be applied.
 	 * <p>The default implementation calls {@link #convertPropertyValue(String)}.
@@ -126,6 +135,11 @@ public abstract class PropertyResourceConfigurer extends PropertiesLoaderSupport
 	}
 
 	/**
+	 * 将属性源中的给定属性值转换为应该应用的值。
+	 * <p>默认实现只返回原始值。
+	 * 可以在子类中重写，
+	 * 例如检测、加密值并相应地解密它们。！！！饶了这么多终于找到这个设计的思想了
+	 *
 	 * Convert the given property value from the properties source to the value
 	 * which should be applied.
 	 * <p>The default implementation simply returns the original value.

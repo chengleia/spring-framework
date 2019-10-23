@@ -214,6 +214,8 @@ public class PropertyPlaceholderConfigurer extends PlaceholderConfigurerSupport 
 
 
 	/**
+	 * 访问给定bean工厂中的每个bean定义，并尝试使用给定属性中的值替换$ {...} property 占位符。
+	 *
 	 * Visit each bean definition in the given bean factory and attempt to replace ${...} property
 	 * placeholders with values from the given properties.
 	 */
@@ -222,14 +224,14 @@ public class PropertyPlaceholderConfigurer extends PlaceholderConfigurerSupport 
 			throws BeansException {
 	    // 创建 StringValueResolver 对象
 		StringValueResolver valueResolver = new PlaceholderResolvingStringValueResolver(props);
-		// 处理
+		// beanFactory和valueResolver来进行处理
 		doProcessProperties(beanFactoryToProcess, valueResolver);
 	}
 
 	private class PlaceholderResolvingStringValueResolver implements StringValueResolver {
-
+		//将占位符去掉${}到PlaceholderResolver，取值
 		private final PropertyPlaceholderHelper helper;
-
+		//里面有props
 		private final PlaceholderResolver resolver;
 
 		public PlaceholderResolvingStringValueResolver(Properties props) {
@@ -241,13 +243,13 @@ public class PropertyPlaceholderConfigurer extends PlaceholderConfigurerSupport 
 		@Override
 		@Nullable
 		public String resolveStringValue(String strVal) throws BeansException {
-		    // 解析真值
+		    // 解析出真正的值
 			String resolved = this.helper.replacePlaceholders(strVal, this.resolver);
-			// trim
+			// 是否去掉空格
 			if (trimValues) {
 				resolved = resolved.trim();
 			}
-			// 返回真值
+			// 返回真正的值
 			return (resolved.equals(nullValue) ? null : resolved);
 		}
 

@@ -108,11 +108,14 @@ public class PropertyPlaceholderHelper {
 	}
 
 	/**
+	 * 替换格式为{@code $ {name}}的所有占位符。
+	 * 使用提供的{@link PlaceholderResolver}中返回的值
+	 *
 	 * Replaces all placeholders of format {@code ${name}} with the value returned
 	 * from the supplied {@link PlaceholderResolver}.
-	 * @param value the value containing the placeholders to be replaced
-	 * @param placeholderResolver the {@code PlaceholderResolver} to use for replacement
-	 * @return the supplied value with placeholders replaced inline
+	 * @param value the value containing the placeholders to be replaced 包含要替换的占位符的值
+	 * @param placeholderResolver the {@code PlaceholderResolver} to use for replacement props在里面
+	 * @return the supplied value with placeholders replaced inline 返回真正的值
 	 */
 	public String replacePlaceholders(String value, PlaceholderResolver placeholderResolver) {
 		Assert.notNull(value, "'value' must not be null");
@@ -120,6 +123,7 @@ public class PropertyPlaceholderHelper {
 	}
 
 	protected String parseStringValue(String value, PlaceholderResolver placeholderResolver, Set<String> visitedPlaceholders) {
+		// 11111${cn.chengl.test}
 		StringBuilder result = new StringBuilder(value);
 
         // 获取前缀 "${" 的索引位置
@@ -128,20 +132,25 @@ public class PropertyPlaceholderHelper {
             // 获取 后缀 "}" 的索引位置
 			int endIndex = findPlaceholderEndIndex(result, startIndex);
 			if (endIndex != -1) {
-                // 截取 "${" 和 "}" 中间的内容，这也就是我们在配置文件中对应的值
+
+                // 截取 "${" 和 "}" 中间的内容，这也就是我们在xml文件中<property name="str" value="${cn.chengl.test}"/>的cn.chengl.test
 				String placeholder = result.substring(startIndex + this.placeholderPrefix.length(), endIndex);
+
+				// 保存到set里防止循环引用 如${cn.chenglei} cn.chenglei=${cn.chenglei}，（下一轮会就会抛异常，此轮不会）
 				String originalPlaceholder = placeholder;
+				// set存在就抛异常
 				if (!visitedPlaceholders.add(originalPlaceholder)) {
 					throw new IllegalArgumentException(
 							"Circular placeholder reference '" + originalPlaceholder + "' in property definitions");
 				}
-				// Recursive invocation, parsing placeholders contained in the placeholder key.
-                // 解析占位符键中包含的占位符，真正的值
+
+                // 解析占位符键中包含的占位符，递归调用将【XML】文件中的占位符解析出来
 				placeholder = parseStringValue(placeholder, placeholderResolver, visitedPlaceholders);
-				// Now obtain the value for the fully resolved key...
-                // 从 Properties 中获取 placeHolder 对应的值 propVal
-                String propVal = placeholderResolver.resolvePlaceholder(placeholder);
-                // 如果不存在
+
+                // 将上面解析出的变量名 从 Properties 中获取对应的值 propVal
+                String propVal                                                                                                                                                               = placeholderResolver.resolvePlaceholder(placeholder);
+
+                // 如果不存在 ${mongodb.url:127.0.0.1}这种表达式 前面是变量名，后面是没取到的默认值
 				if (propVal == null && this.valueSeparator != null) {
                     // 查询 : 的位置
 					int separatorIndex = placeholder.indexOf(this.valueSeparator);
@@ -158,15 +167,17 @@ public class PropertyPlaceholderHelper {
 							propVal = defaultValue;
 						}
 					}
+
 				}
 				if (propVal != null) {
-					// Recursive invocation, parsing placeholders contained in the
-					// previously resolved placeholder value.
+					//再次递归解析，props文件中可能这样配  cn.chenglei=${cn.chenglei}, proVal=${cn.chenglei}
 					propVal = parseStringValue(propVal, placeholderResolver, visitedPlaceholders);
+					//将11111${cn.chengl.test}中${cn.chengl.test}替换
 					result.replace(startIndex, endIndex + this.placeholderSuffix.length(), propVal);
 					if (logger.isTraceEnabled()) {
 						logger.trace("Resolved placeholder '" + placeholder + "'");
 					}
+					//11111${cn.chengl.test}${cn.chengl.test},外层大的while就是来弄后面多个$的
 					startIndex = result.indexOf(this.placeholderPrefix, startIndex + propVal.length());
 				} else if (this.ignoreUnresolvablePlaceholders) {
 					// Proceed with unprocessed value.

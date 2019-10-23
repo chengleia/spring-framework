@@ -1731,6 +1731,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		BeanDefinitionValueResolver valueResolver = new BeanDefinitionValueResolver(this, beanName, mbd, converter);
 
 		// Create a deep copy, resolving any references for values.
+		// 创建深层副本，解析值的任何引用。
 		List<PropertyValue> deepCopy = new ArrayList<>(original.size());
 		boolean resolveNecessary = false;
         // 遍历属性，将属性转换为对应类的对应属性的类型
@@ -1741,11 +1742,15 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             // 属性值需要转换
 			} else {
 				String propertyName = pv.getName();
-				Object originalValue = pv.getValue(); // 原始的属性值，即转换之前的属性值
-				Object resolvedValue = valueResolver.resolveValueIfNecessary(pv, originalValue); // 转换属性值，例如将引用转换为IoC容器中实例化对象引用 ！！！！！ 对属性值的解析！！
-				Object convertedValue = resolvedValue; // 转换之后的属性值
+				// 原始的属性值，即转换之前的属性值
+				Object originalValue = pv.getValue();
+				// 转换属性值，例如将引用转换为IoC容器中实例化对象引用 ！！！！！ 对属性值的解析！！
+				Object resolvedValue = valueResolver.resolveValueIfNecessary(pv, originalValue);
+				// 转换之后的属性值
+				Object convertedValue = resolvedValue;
+				// 属性值是否可以转换
 				boolean convertible = bw.isWritableProperty(propertyName) &&
-						!PropertyAccessorUtils.isNestedOrIndexedProperty(propertyName);  // 属性值是否可以转换
+						!PropertyAccessorUtils.isNestedOrIndexedProperty(propertyName);
                 // 使用用户自定义的类型转换器转换属性值
 				if (convertible) {
 					convertedValue = convertForProperty(resolvedValue, propertyName, bw, converter);
