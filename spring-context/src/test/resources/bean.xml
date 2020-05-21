@@ -1,26 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+<beans  xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
+	<bean id="b" class="org.springframework.study.B" >
+	</bean>
 
-	<bean id="b" class="org.springframework.study.B">
-<!--		<property name="a" ref="a"/>-->
+	<bean id="a" class="org.springframework.study.HelloWorld">
+
+	</bean>
+
+	<bean id="c" class="org.springframework.study.A">
+		<constructor-arg ref="a"></constructor-arg>
 	</bean>
 
 
-	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="location">
-			<value>props.properties</value>
-		</property>
-	</bean>
+<!--	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">-->
+<!--		<property name="location">-->
+<!--			<value>props.properties</value>-->
+<!--		</property>-->
+<!--	</bean>-->
 
-	<bean id="a" class="org.springframework.study.A">
-		<property name="b" ref="${b}"/>
-		<property name="str" value="11111${cn.chengl.test}${cn.chengl.test}"/>
-	</bean>
 
-	<bean id="testBeanPostProcessor" class="org.springframework.study.TestBeanPostProcessor"/>
+
+<!--	<bean id="a" class="org.springframework.study.A">-->
+<!--		<property name="b" ref="${b}"/>Spring.schemas-->
+<!--		<property name="str" value="11111${cn.chengl.test}${cn.chengl.test}"/>-->
+<!--	</bean>-->
+
+<!--	<bean id="testBeanPostProcessor" class="org.springframework.study.TestBeanPostProcessor"/>-->
 
 
 <!--	<bean id="aop" class="org.springframework.study.TestAop"></bean>-->

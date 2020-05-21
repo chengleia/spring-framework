@@ -1,11 +1,26 @@
 package org.springframework.study;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 public class A {
+
 	private B b;
+
+	private HelloWorld helloWorld;
 
 	private String str = "test string";
 
 	private int number = 1;
+
+	public A(B b) {
+		this.b = b;
+	}
+
+	@Autowired
+	public A(B b, HelloWorld helloWorld) {
+		this.b = b;
+		this.helloWorld = helloWorld;
+	}
 
 	public B getB() {
 		return b;

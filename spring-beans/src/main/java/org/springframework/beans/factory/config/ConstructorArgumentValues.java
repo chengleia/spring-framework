@@ -162,7 +162,9 @@ public class ConstructorArgumentValues {
 	@Nullable
 	public ValueHolder getIndexedArgumentValue(int index, @Nullable Class<?> requiredType, @Nullable String requiredName) {
 		Assert.isTrue(index >= 0, "Index must not be negative");
+
 		ValueHolder valueHolder = this.indexedArgumentValues.get(index);
+
 		if (valueHolder != null &&
 				(valueHolder.getType() == null ||
 						(requiredType != null && ClassUtils.matchesTypeName(requiredType, valueHolder.getType()))) &&
@@ -170,6 +172,7 @@ public class ConstructorArgumentValues {
 						(requiredName != null && requiredName.equals(valueHolder.getName())))) {
 			return valueHolder;
 		}
+
 		return null;
 	}
 
@@ -279,19 +282,19 @@ public class ConstructorArgumentValues {
 	@Nullable
 	public ValueHolder getGenericArgumentValue(@Nullable Class<?> requiredType, @Nullable String requiredName, @Nullable Set<ValueHolder> usedValueHolders) {
 		for (ValueHolder valueHolder : this.genericArgumentValues) {
+
 			if (usedValueHolders != null && usedValueHolders.contains(valueHolder)) {
 				continue;
 			}
-			if (valueHolder.getName() != null && !"".equals(requiredName) &&
-					(requiredName == null || !valueHolder.getName().equals(requiredName))) {
+
+			if (valueHolder.getName() != null && !"".equals(requiredName) && (requiredName == null || !valueHolder.getName().equals(requiredName))) {
 				continue;
 			}
-			if (valueHolder.getType() != null &&
-					(requiredType == null || !ClassUtils.matchesTypeName(requiredType, valueHolder.getType()))) {
+			if (valueHolder.getType() != null && (requiredType == null || !ClassUtils.matchesTypeName(requiredType, valueHolder.getType()))) {
 				continue;
 			}
-			if (requiredType != null && valueHolder.getType() == null && valueHolder.getName() == null &&
-					!ClassUtils.isAssignableValue(requiredType, valueHolder.getValue())) {
+			//至少类型得能转
+			if (requiredType != null && valueHolder.getType() == null && valueHolder.getName() == null && !ClassUtils.isAssignableValue(requiredType, valueHolder.getValue())) {
 				continue;
 			}
 			return valueHolder;
@@ -351,10 +354,16 @@ public class ConstructorArgumentValues {
 	@Nullable
 	public ValueHolder getArgumentValue(int index, @Nullable Class<?> requiredType, @Nullable String requiredName, @Nullable Set<ValueHolder> usedValueHolders) {
 		Assert.isTrue(index >= 0, "Index must not be negative");
+
+		//取出对应index配置的，必须保证名字类型也一样
 		ValueHolder valueHolder = getIndexedArgumentValue(index, requiredType, requiredName);
+
+		//如果配置的没符合的，就不要index，找名字和类型（名字没有，但类型合适也可以），但得传一个已被使用的集合
 		if (valueHolder == null) {
 			valueHolder = getGenericArgumentValue(requiredType, requiredName, usedValueHolders);
 		}
+
+		//返回值
 		return valueHolder;
 	}
 

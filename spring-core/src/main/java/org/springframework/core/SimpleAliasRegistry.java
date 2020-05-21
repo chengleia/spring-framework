@@ -56,6 +56,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 	public void registerAlias(String name, String alias) {
 		Assert.hasText(name, "'name' must not be empty");
 		Assert.hasText(alias, "'alias' must not be empty");
+
 		synchronized (this.aliasMap) {
             // 当name==alias时 这个alias就是id，则去掉alias
 			// 这里直接return就好了，不知道为什么remove..

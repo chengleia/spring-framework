@@ -1,6 +1,7 @@
 package org.springframework.study;
 
 import org.junit.Test;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
@@ -11,25 +12,10 @@ public class DefaultListableBeanFactoryTest {
 
 	@Test
 	public void  testBeanFactory() throws Exception{
-		/**
-		    BeanFactory：可以理解为IoC容器的抽象，提供了ioc容器的最基本API。
-		 	ApplicationContext：IoC容器的高级形态，在基础IoC容器上加了许多特性。
-		 	DefaultListableBeanFactory是IoC容器的最基础实现，是一个最基础最简单的IoC容器对象，
-		 	其高级容器ApplicationContext也是通过持有DefaultListableBeanFactory引用，在基础IoC容器之上进行特性增强
-		 **/
+		// aliasTest();
+		// argsTest();
+		testAutoWired();
 
-//		ApplicationContext context = new ClassPathXmlApplicationContext("bean.xml");
-//		A a =  (A)context.getBean("a");
-//		System.out.println(a.getB());
-
-		ClassPathResource resource = new ClassPathResource("bean.xml");
-
-		DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
-
-		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(factory);
-		//这里设置了的话会在加载xml时就将  beandefinition的  beanClass从 String - > Class
-		//reader.setBeanClassLoader(this.getClass().getClassLoader());
-		reader.loadBeanDefinitions(resource);
 
 //		BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder
 //				.genericBeanDefinition(HelloWorldTwo.class);
@@ -37,10 +23,10 @@ public class DefaultListableBeanFactoryTest {
 //		factory.registerAlias("q","q");
 
 //		Object a1 = factory.getBean("a");
-		TestBeanPostProcessor testBeanPostProcessor = new TestBeanPostProcessor();
-		factory.addBeanPostProcessor(testBeanPostProcessor);
-		TestBeanPostProcessor test = (TestBeanPostProcessor)factory.getBean("testBeanPostProcessor");
-		test.display();
+//		TestBeanPostProcessor testBeanPostProcessor = new TestBeanPostProcessor();
+//		factory.addBeanPostProcessor(testBeanPostProcessor);
+//		TestBeanPostProcessor test = (TestBeanPostProcessor)factory.getBean("testBeanPostProcessor");
+//		test.display();
 
 //
 //		//工厂方法单例测试
@@ -92,6 +78,75 @@ public class DefaultListableBeanFactoryTest {
 //		list = map.computeIfAbsent("list-1", k -> new ArrayList<>());
 //		list.add("one");
 
+
+
 	}
+
+
+	static DefaultListableBeanFactory getBeanFactory(){
+		/**
+		 * BeanFactory：可以理解为IoC容器的抽象，提供了ioc容器的最基本API。
+		 * ApplicationContext：IoC容器的高级形态，在基础IoC容器上加了许多特性。
+		 * DefaultListableBeanFactory是IoC容器的最基础实现，是一个最基础最简单的IoC容器对象，
+		 * 其高级容器ApplicationContext也是通过持有DefaultListableBeanFactory引用，在基础IoC容器之上进行特性增强
+		 **/
+		// ApplicationContext context = new ClassPathXmlApplicationContext("bean.xml");
+		// A a =  (A)context.getBean("a");
+		// System.out.println(a.getB());
+
+		ClassPathResource resource = new ClassPathResource("bean.xml");
+
+		DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
+
+		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(factory);
+
+		//这里设置了的话会在加载xml时就将  beandefinition的  beanClass从 String - > Class
+		//reader.setBeanClassLoader(this.getClass().getClassLoader());
+
+		reader.loadBeanDefinitions(resource);
+
+		return factory;
+	}
+
+	static void aliasTest(){
+
+		DefaultListableBeanFactory factory = getBeanFactory();
+
+		BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder .genericBeanDefinition(HelloWorldTwo.class);
+
+		factory.registerBeanDefinition("b", beanDefinitionBuilder.getBeanDefinition());
+
+		Object b = factory.getBean("b");
+		System.out.println(b);
+		// b->B
+	}
+
+	public void argsTest(){
+		// 查看传递args，单例子是否依旧生效
+		DefaultListableBeanFactory factory = getBeanFactory();
+
+		Object b = factory.getBean("b");
+		Object b1 = factory.getBean("b",2,"2");
+		System.out.println(b);
+		System.out.println(b1);
+		System.out.println(b==b1);
+
+		//========
+		//B{i=1, string='2'}
+		//B{i=1, string='2'}
+		//true
+	}
+
+
+	public void testAutoWired(){
+		DefaultListableBeanFactory factory = getBeanFactory();
+
+		Object b = factory.getBean("c");
+
+		System.out.println(b);
+
+	}
+
+
 
 }

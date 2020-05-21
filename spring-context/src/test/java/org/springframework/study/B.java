@@ -1,13 +1,32 @@
 package org.springframework.study;
 
-public class B {
-	private A a;
+import org.springframework.beans.factory.annotation.Autowired;
 
-	public A getA() {
-		return a;
+import java.beans.ConstructorProperties;
+
+public class B {
+
+
+	private int i;
+	private String string;
+
+	@Autowired
+	public B(int i,String s) {
+		this.i = i;
+		this.string = s;
 	}
 
-	public void setA(A a) {
-		this.a = a;
+	@Autowired
+	public B(int i) {
+		this.i = i;
+	}
+
+
+	@Override
+	public String toString() {
+		return "B{" +
+				"i=" + i +
+				", string='" + string + '\'' +
+				'}';
 	}
 }

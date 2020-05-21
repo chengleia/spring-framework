@@ -174,6 +174,44 @@ public interface ListableBeanFactory extends BeanFactory {
 	 * @see FactoryBean#getObjectType
 	 * @see BeanFactoryUtils#beanNamesForTypeIncludingAncestors(ListableBeanFactory, Class, boolean, boolean)
 	 */
+
+	//	返回与给定类型（包括子类）匹配的bean的名称，
+//	从bean定义或{@code getObjectType}的值判断
+//	以工厂豆为例。
+//<p><b>注意：此方法仅对顶级bean进行内省。</b>它确实<i>不<i>
+//	检查可能与指定类型也匹配的嵌套bean。
+
+// 如果设置了“allowagerinit”标志，则考虑由FactoryBeans创建的对象，
+//	这意味着FactoryBeans将被初始化。如果
+//	FactoryBean不匹配，原始FactoryBean本身将与
+//	键入。
+//
+//	如果未设置“allowagerinit”，则只检查原始的FactoryBeans
+//（不需要初始化每个FactoryBean）。
+//<p>不考虑此工厂可能参与的任何层次结构。
+//	使用BeanFactoryUtils'{@code beannamesfortypeincluding祖先}
+//	把豆子也包括在祖先的工厂里。
+
+//<p>注意：是否忽略已注册的singleton bean
+//	通过其他方式而不是bean定义。
+
+//<p>此方法返回的Bean名称在
+//	尽可能在后端配置中定义的顺序</i>。
+//	@param键入要匹配的类或接口，或{@code null}用于所有bean名称
+//	@param includeNonsinglets是否也包括原型bean或作用域bean
+//	或者仅仅是单件（也适用于FactoryBeans）
+
+//	@param allowagerinit是否初始化lazy init singleton
+//			<i> 由FactoryBeans创建的对象
+//“工厂bean”引用）进行类型检查。注意，FactoryBeans需要
+//	急切地初始化以确定其类型：因此请注意，传入“true”
+//	对于此标志，将初始化FactoryBeans和“FactoryBean”引用。
+//	@返回匹配的bean（或由FactoryBeans创建的对象）的名称
+//	给定的对象类型（包括子类），如果没有，则为空数组
+//	@参见FactoryBean#getObjectType
+//	@请参见BeanFactoryUtils#beannamesfortypeincluding祖先（ListableBeanFactory，类，布尔型，布尔型）
+
+	// 有用点就是beanfactroy是否被创建
 	String[] getBeanNamesForType(@Nullable Class<?> type, boolean includeNonSingletons, boolean allowEagerInit);
 
 	/**

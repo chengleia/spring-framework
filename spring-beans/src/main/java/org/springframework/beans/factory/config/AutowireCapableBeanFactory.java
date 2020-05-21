@@ -103,6 +103,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * @see #autowire
 	 * @deprecated as of Spring 3.0: If you are using mixed autowiring strategies,
 	 * prefer annotation-based autowiring for clearer demarcation of autowiring needs.
+	 * 它首先会尝试使用constructor进行自动装配，如果失败再尝试使用byType。不过，它在
 	 */
 	@Deprecated
 	int AUTOWIRE_AUTODETECT = 4;

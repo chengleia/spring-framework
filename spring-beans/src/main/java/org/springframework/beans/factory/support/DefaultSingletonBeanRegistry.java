@@ -205,23 +205,28 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	protected Object getSingleton(String beanName, boolean allowEarlyReference) {
         // 从单例对象缓存中获取beanName对应的单例对象
 	    Object singletonObject = this.singletonObjects.get(beanName);
+
         // 如果单例对象缓存中没有，并且该beanName对应的单例bean正在创建中
 		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
             synchronized (this.singletonObjects) {
                 // 从早期单例对象缓存中获取单例对象（之所以成为早期单例对象，是因为earlySingletonObjects里
 				// 的对象的都是通过提前曝光的ObjectFactory创建出来的，还未进行属性填充等操作）
                 singletonObject = this.earlySingletonObjects.get(beanName);
+
                 // 如果在早期单例对象缓存中也没有，并且允许创建早期单例对象引用
                 if (singletonObject == null && allowEarlyReference) {
                     // 从 singletonFactories 中获取对应的 ObjectFactory
 					// todo 这个ObjectFactory是哪里来的
 					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
 					if (singletonFactory != null) {
+
 					    // 如果存在单例对象工厂，则通过工厂创建一个单例对象
 						singletonObject = singletonFactory.getObject();
+
 						// 添加 singletonObject 到 earlySingletonObjects 中
 						//todo 这里为什么没把bean放到isSingletonCurrentlyInCreation 的Set中
 						this.earlySingletonObjects.put(beanName, singletonObject);
+
 						// 从 singletonFactories 中移除对应的 ObjectFactory
 						//
 						// 移除该beanName对应的单例对象工厂，因为该单例工厂已经创建了一个实例对象，
@@ -231,8 +236,10 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 						this.singletonFactories.remove(beanName);
 					}
 				}
+
 			}
 		}
+
 		return singletonObject;
 	}
 
@@ -386,8 +393,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * @see #isSingletonCurrentlyInCreation
 	 */
 	protected void beforeSingletonCreation(String beanName) {
-		if (!this.inCreationCheckExclusions.contains(beanName)
-                && !this.singletonsCurrentlyInCreation.add(beanName)) { // 添加
+		if (!this.inCreationCheckExclusions.contains(beanName) && !this.singletonsCurrentlyInCreation.add(beanName)) { // 添加
 			throw new BeanCurrentlyInCreationException(beanName);
 		}
 	}
@@ -399,8 +405,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * @see #isSingletonCurrentlyInCreation
 	 */
 	protected void afterSingletonCreation(String beanName) {
-		if (!this.inCreationCheckExclusions.contains(beanName) &&
-                !this.singletonsCurrentlyInCreation.remove(beanName)) { // 移除
+		if (!this.inCreationCheckExclusions.contains(beanName) && !this.singletonsCurrentlyInCreation.remove(beanName)) { // 移除
 		    // 如果移除失败，则抛出 IllegalStateException 异常
 			throw new IllegalStateException("Singleton '" + beanName + "' isn't currently in creation");
 		}
@@ -514,7 +519,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		 	加了一个alreadySeen 当开始递归时把beanName放进去，防止有手贱的人 beanName->beanName
 
 		 	当I0等于beanName时 也会return false 但是 I是存在循环依赖的
-		 	但是这里隐含的隐含的是beanName -> I 在外层doGetBean的循环会走到 beanName -> I 抛出异常
+		 	但是这里隐含的是beanName -> I 在外层doGetBean的循环会走到 beanName -> I 抛出异常
 		 	即一次isDependent 只关注这次 dependentBeanName 的创建会不会出现循环依赖
 
 

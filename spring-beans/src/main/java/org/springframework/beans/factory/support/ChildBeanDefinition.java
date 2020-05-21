@@ -38,6 +38,10 @@ import org.springframework.util.ObjectUtils;
  * {@link GenericBeanDefinition#setParentName} method. This effectively
  * supersedes the ChildBeanDefinition class for most use cases.
  *
+ * 从Spring 2.5开始，以编程方式注册bean  定义的首选方法是{@link GenericBeanDefinition}类，该类允许通过
+ * {@link动态定义父依赖关系。 GenericBeanDefinition＃setParentName}方法。对于大多数用例，这有效地
+ * 代替了ChildBeanDefinition类。
+ *
  * @author Rod Johnson
  * @author Juergen Hoeller
  * @see GenericBeanDefinition

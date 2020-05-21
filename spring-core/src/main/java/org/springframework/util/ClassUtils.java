@@ -533,15 +533,18 @@ public abstract class ClassUtils {
 	public static boolean isAssignable(Class<?> lhsType, Class<?> rhsType) {
 		Assert.notNull(lhsType, "Left-hand side type must not be null");
 		Assert.notNull(rhsType, "Right-hand side type must not be null");
+		// 值是 类型相同或者子类
 		if (lhsType.isAssignableFrom(rhsType)) {
 			return true;
 		}
+		// 值是包装类
 		if (lhsType.isPrimitive()) {
 			Class<?> resolvedPrimitive = primitiveWrapperTypeMap.get(rhsType);
 			if (lhsType == resolvedPrimitive) {
 				return true;
 			}
 		}
+		//值是 包装类子类
 		else {
 			Class<?> resolvedWrapper = primitiveTypeToWrapperMap.get(rhsType);
 			if (resolvedWrapper != null && lhsType.isAssignableFrom(resolvedWrapper)) {
