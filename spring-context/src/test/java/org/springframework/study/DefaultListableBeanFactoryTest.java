@@ -10,6 +10,7 @@ import org.springframework.core.io.ClassPathResource;
 
 public class DefaultListableBeanFactoryTest {
 
+
 	@Test
 	public void  testBeanFactory() throws Exception{
 		// aliasTest();
@@ -138,7 +139,7 @@ public class DefaultListableBeanFactoryTest {
 	}
 
 
-	public void testAutoWired(){
+	public static void testAutoWired(){
 		DefaultListableBeanFactory factory = getBeanFactory();
 
 		Object b = factory.getBean("c");
